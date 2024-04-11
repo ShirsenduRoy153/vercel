@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="registrationApp">
+<head>
+    <meta charset="UTF-8">
+    <meta firstname="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    {{!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    {{!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"> --}}
+    <title>Registration Form</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #64b5f6, #4CAF50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            background-color: #ffffff;
+            width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2196F3;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            border: 1px solid #2196F3;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            max-height: 400px; /* Set a maximum height for the modal content */
+            overflow-y: auto; /* Add vertical scrollbar if content exceeds the maximum height */
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #registration_id {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        #message {
+            margin-top: 10px;
+        }
+
+        #strength {
+            font-weight: bold;
+        }
+
+        #submitBtn {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #submitBtn:hover {
+            background-color: #45a049;
+        }
+
+        .add_field_button1,
+        .add_field_button2,
+        .remove_field_button1,
+        .remove_field_button2 {
+            background-color: #2196F3;
+            color: #fff;
+            border: none;
+            padding: 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .add_field_button1:hover,
+        .add_field_button2:hover,
+        .remove_field_button1:hover,
+        .remove_field_button2:hover {
+            background-color: #1565C0;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .registration-btn {
+            background-color: #2196F3;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .registration-btn:hover {
+            background-color: #1565C0;
+        }
+
+        .ng-animate {
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+        .ng-animate.ng-enter,
+        .ng-animate.ng-leave {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .ng-animate.ng-enter.ng-enter-active,
+        .ng-animate.ng-leave.ng-leave-active {
+            opacity: 1;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .modal-content {
+            /* Existing styles for modal content */
+            transform: scale(0.8);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .modal-content.ng-enter,
+        .modal-content.ng-leave {
+            opacity: 0;
+        }
+
+        .modal-content.ng-enter.ng-enter-active,
+        .modal-content.ng-leave.ng-leave-active {
+            opacity: 1;
+        }
+
+        .modal-content.ng-enter-active {
+            transform: scale(1);
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .confetti .particle {
+            background: #e44d26;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            animation: confetti-fall linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body ng-controller="RegistrationController">
+
+    <div class="overlay" ng-show="showModal" ng-click="toggleModal()"></div>
+
+    <button ng-click="toggleModal()" id="registration_id" class="registration-btn">Register</button>
+    <div class="container">
+        <div ng-show="showModal" id="registration_modal" class="modal" style="display: none;" ng-class="{ 'ng-animate': showModal }">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Registration Form</h2>
+                <form id="registration_form">
+                    <div class="form-group">
+                        <label for="cv">Upload CV:</label>
+                        <input type="file" id="imageInput" onchange="handleImageChange()">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstname">firstname:</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastname">Last name:</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="text" class="form-control" id="address" name="address">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone No:</label>
+                        <input type="text" class="form-control" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="text" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" ng-model="password">
+                    </div>
+                    <div class="input_field_container2">
+                        <div class="input_field_wrap2">
+                            <label for="Skills">Add your Skills</label>    
+                                <select class="selectpicker" name="skill" id="skill" multiple>
+                                    <option value="skill1">Skill 1</option>
+                                    <option value="skill2">Skill 2</option>
+                                    <option value="skill3">Skill 3</option>
+                                </select>
+                        </div>
+                    </div>
+                    <div class="input_field_container">
+                        <div class="input_field_wrap">
+                            <label for="Education">Education</label>    
+                                <div class="form-group">
+                                    <label>Degree:</label>
+                                    <select class="form-control" name="degree" id="degree0">
+                                        <option value="btech">B.Tech</option>
+                                        <option value="mtech">M.Tech</option>
+                                        <option value="bcom">B.Com</option>
+                                    </select>
+                                    <label>University:</label>
+                                    <select class="form-control" firstname="university" id="university0">
+                                        <option value="university1">University 1</option>
+                                        <option value="university2">University 2</option>
+                                        <option value="university3">University 3</option>
+                                    </select>
+                                    <label>Start Date:</label>
+                                    <input type="date" class="form-control" firstname="startdate" id="startdate0">
+                                    <label>End Date:</label>
+                                    <input type="date" class="form-control" firstname="enddate" id="enddate0">
+                                </div>
+                            <button class="add_field_button1" class="btn btn-primary">Add More</button><br>
+                        </div>
+                    </div>
+                    <div class="confetti" ng-show="showConfetti">
+                        <div class="particle" ng-repeat="particle in confettiParticles track by $index"></div>
+                    </div>
+                    <button type="submit" id="submitBtn">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script> 
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>    --}}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+<script>
+    $(document).on('click', '#registration_id', function() {
+    $("#registration_modal").show();
+    });
+
+    $(".close").on("click", function() {
+        $("#registration_modal").hide();
+    });
+
+    let base64String;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const strengthIndicator = document.getElementById("strength");
+
+        passwordInput.addEventListener("input", function () {
+            const password = passwordInput.value;
+            const strength = calculatePasswordStrength(password);
+
+            /*strengthIndicator.classList.remove("weak", "medium", "strong");
+
+            if (strength === "weak") {
+                strengthIndicator.classList.add("weak");
+                strengthIndicator.textContent = " Weak";
+            } else if (strength === "medium") {
+                strengthIndicator.classList.add("medium");
+                strengthIndicator.textContent = " Medium";
+            } else if (strength === "strong") {
+                strengthIndicator.classList.add("strong");
+                strengthIndicator.textContent = " Strong";
+            }*/
+        });
+
+        function calculatePasswordStrength(password) {
+            if (password.length < 8) {
+                return "weak";
+            } else if (password.length < 12) {
+                return "medium";
+            } else {
+                return "strong";
+            }
+        }
+        });
+
+        /*function capitalizeFirstLetter() {
+        let inputElement = document.getElementById('name');
+        let inputValue = inputElement.value;
+
+        let capitalizedValue = inputValue.charAt(0).toUpperCase() + inputValue.slice(1);
+
+        inputElement.value = capitalizedValue;
+        }*/
+
+    $.validator.addMethod("lettersOnly", function(value, element) {
+    return this.optional(element) || /^[A-Za-z]+$/i.test(value);
+    }, "Please enter only alphabetic characters.");
+    
+    $.validator.addMethod("isValidPhoneNumber", function(value, element) {
+    return this.optional(element) || /^[1-9][0-9]*$/i.test(value);
+    }, "Please enter don't start the contact no. with zero digit");
+
+    $.validator.addMethod("strongPassword", function(value, element) {
+        // At least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special character
+        return this.optional(element) || /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/i.test(value);
+    }, "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+    
+    //$.validator.addMethod("pdfOnly", function(value, element) {
+    //return this.optional(element) || /\.(pdf)$/i.test(value);
+    //}, "Please upload a PDF file.");
+
+    $(document).ready(function(){
+        var max_fields = 10;
+
+        var x = 0;
+        $(".add_field_button1").click(function(e){
+            e.preventDefault();
+            x++;
+                var html = `<div class="input_field_wrap">
+                            <label for="Education">Education</label>    
+                                <div class="form-group">
+                                    <label>Degree:</label>
+                                    <select class="form-control" firstname="degree${x}" id="degree${x}">
+                                        <option value="btech">B.Tech</option>
+                                        <option value="mtech">M.Tech</option>
+                                        <option value="bcom">B.Com</option>
+                                    </select>
+                                    <label>University:</label>
+                                    <select class="form-control" firstname="university${x}" id="university${x}">
+                                        <option value="university1">University 1</option>
+                                        <option value="university2">University 2</option>
+                                        <option value="university3">University 3</option>
+                                    </select>
+                                    <label>Start Date:</label>
+                                    <input type="date" class="form-control" firstname="startdate${x}" id="startdate${x}">
+                                    <label>End Date:</label>
+                                    <input type="date" class="form-control" firstname="enddate${x}" id="enddate${x}">
+                                </div>
+                            <button class="remove_field_button1">remove</button><br>
+                        </div>`
+                $(".input_field_container").append(html);
+        })
+
+        $(".input_field_container").on("click",".remove_field_button1", function(e){
+            e.preventDefault();
+            $(this).parent('div').remove();
+        })
+    })
+//----------------------------------
+    
+
+function handleImageChange() {
+    var input = document.getElementById('imageInput');
+        const file = input.files[0]
+        var reader = new FileReader();
+
+        reader.onload = function () {
+            base64String = reader.result;
+           // console.log('Base64-encoded image:', base64String);
+        };
+        reader.readAsDataURL(file);
+}
+
+$(document).ready(function(){
+    $("#registration_form").validate({
+        rules: {
+            firstname: {
+                required: true,
+                lettersOnly: true
+            },
+            lastname: {
+                required: true,
+                lettersOnly: true
+            },
+            email: {
+                required: true,
+                maxlength: 50
+            },
+            phone: {
+                required: true,
+                minlength: 10,
+                maxlength: 10,
+                isValidPhoneNumber: true
+            },
+            password: {
+                required: true,
+                strongPassword: true
+            },
+            cv: {
+                required: true,
+                pdfOnly: true
+            }
+        },
+        messages: {
+            phone: {
+                required: "Please enter a contact number",
+                validContNo: "Please enter a valid 10-digit contact number that does not start with zero"
+            },
+            password: {
+                required: "Please enter a password",
+            },
+            cv: {
+                required: "Please upload a file",
+            }
+        },
+        submitHandler: function(form){
+            const firstname = $('#firstname').val();
+            const lastname = $('#lastname').val();
+            const email = $('#email').val();
+            const address = $('#address').val();
+            const phone = $('#phone').val();
+            const password = $('#password').val();
+            const degree = $('#degree0').val();
+            const university = $('#university0').val();
+            const startdate = $('#startdate0').val();
+            const enddate = $('#enddate0').val();
+            const skill = $('#skill').val();
+            
+
+            const edurow = [];
+            $(".input_field_wrap").each(function (index) {
+                let newedu = {
+                    degree: $(`#degree${index}`).val(),
+                    university: $(`#university${index}`).val(),
+                    startdate: $(`#startdate${index}`).val(),
+                    enddate: $(`#enddate${index}`).val()
+                };
+            edurow.push(newedu);
+            });            
+
+            console.log(edurow)
+            console.log(skill)
+            $.ajax({
+                type: "POST",
+                url: "/reg",
+                data: {
+                    'firstname': firstname,
+                    'lastname': lastname,
+                    'address': address,
+                    'email': email,
+                    'phone': phone,
+                    'password': password,
+                    'degree': degree,
+                    'university': university,
+                    'startdate': startdate,
+                    'enddate': enddate,
+                    'skill': skill,
+                    'edurow': JSON.stringify(edurow),
+                    'base64String': base64String
+                },
+                success: function(response)  {
+                    if (response.success == true) {
+                        alert("Form submitted successfully.");
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+</body>
+</html>
